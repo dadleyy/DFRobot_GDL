@@ -109,8 +109,17 @@ void DFRobot_GDL::drawPIC(int16_t x,int16_t y,uint16_t w ,uint16_t h,uint8_t * r
   }
 
 }
+#ifdef ESP32
 void DFRobot_GDL::setRotation(uint8_t r){
+  uint8_t value = 0xC0;
+  sendCommand(madctlReg.madctl, &value, 1, true);
+}
+#else
+void DFRobot_GDL::setRotation(uint8_t r){
+  // TODO: what is this?
   if(madctlReg.madctl == 0) return;
+
+  // TODO: what is this?
   if(madctlReg.madctl == 0xA0){
       rotation = r&1;
       switch(rotation){
@@ -124,6 +133,7 @@ void DFRobot_GDL::setRotation(uint8_t r){
                 break;
       }
   }else{
+        // TODO: what is this?
         rotation = r&3;
         uint8_t temp = madctlReg.args.value;
         switch(rotation){
@@ -159,10 +169,12 @@ void DFRobot_GDL::setRotation(uint8_t r){
                 _yStart = 0;
                 break;
         }
-        sendCommand(madctlReg.madctl, &madctlReg.args.value, 1,true);
+        sendCommand(madctlReg.madctl, &madctlReg.args.value, 1, true);
         madctlReg.args.value = temp;
   }
 }
+#endif
+
 void DFRobot_GDL::invertDisplay(bool i){
   if(invertOnCmd == invertOffCmd) return;
   sendCommand(i ? invertOnCmd : invertOffCmd);
